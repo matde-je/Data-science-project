@@ -1,0 +1,237 @@
+---
+title: "**Caso Prático 1 - Saúde Psicológica e Bem-estar**"
+author: "**Elaborado por:** <br> Filipe Rego - 111533, Matilde Costa - 110995, Leonor
+  Laborinho - 111287, Lúcia Yang - 111023, Tomás Monge - 98574"
+date: '**Abril de 2022**'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+<style>
+
+h1.title {
+  font-size: 60px;
+  font-family: "Calibri Light", Serif;
+  color: purple;
+  text-align: center;
+}
+h4.author {
+  font-size: 26px;
+  font-family: "Calibri";
+  color: black;
+  text-align: center;
+}
+h4.date {
+  font.size: 30px;
+  font-family: "Calibri";
+  color: black;
+  text-align: center;
+}
+body {
+  text-align: justify}
+p {
+  font-size: 20px;
+  text-indent: 2em;
+  color: black;
+  }
+
+</style>
+
+```{r fig.align="center", message=FALSE, include=FALSE}
+library(openxlsx)
+library(tidyverse)
+library(ggplot2)
+library(jmv)
+library(treemap)
+library(descr)
+library(moments)
+library(flextable)
+library(foreign)
+library(dplyr)
+
+cd <-read.xlsx("Aed_Trabalho_Saude.xlsx")
+dt <- data.frame(cd)
+dt
+```
+
+<h1>**Introdução**</h1>
+Neste relatório procede-se à analise de dados de um estudo sobre a saúde psicológica e bem-estar de crianças e adolescentes em idade escolar em diferentes regiões do norte de Portugal. Estes dados são provenientes de um questionário realizado a 996 indivíduos entre 11 e 20 anos. Com esta breve introdução, procede-se a montagem de gráficos e tabelas de modo a análisar, refletir e comparar os resultados obtidos. Em algumas tabelas e gráficos é possível observar o valor "99" que simboliza as não respostas.
+
+
+<h1>**Horas de sono**</h1>
+
+```{r include=FALSE}
+Horas.de.sono <- replace(dt$Horas.de.sono,is.na(dt$Horas.de.sono), 8)
+thorassono <- table(cd$Horas.de.sono)
+thorassono
+```
+
+```{r include=FALSE}
+thorasperc <- round(prop.table(thorassono)*100,1) 
+thorasperc
+```
+
+
+```{r include=FALSE}
+bind_rows(thorassono, thorasperc)
+```
+
+Como se visualiza no gráfico, pode-se concluir que a maioria dos alunos dorme entre 7 a 9 horas.
+
+```{r echo=FALSE, fig.align="center", message=FALSE}
+
+thorassono_grouped <- c(sum(thorassono[1:3]), sum(thorassono[4:6]), thorassono[7])
+
+# gráfico:
+pie(thorassono_grouped, 
+    main="Horas de Sono", 
+    labels = c(" <6", " 7 - 9 ", " 10+"), 
+    col = c("#66c2a5", "#fc8d62", "#8da0cb"), 
+    border = "white")
+```
+<center> Pie Chart - Distribuição dos inquiridos por Horas de sono </center>
+
+```{r fig.align="center", message=FALSE, include=FALSE}
+ttempoecra <- table(cd$Tempo.de.ecrã) 
+ttempoecraperc <- round(prop.table(ttempoecra)*100,1)
+bind2 <- bind_rows(ttempoecra, ttempoecraperc)
+bind2
+```
+
+```{r fig.align="center", message=FALSE, include=FALSE}
+#Idade
+tidade <- table(cd$Idade) 
+tidadeperc <- round(prop.table(tidade)*100,1)
+bind2 <- bind_rows(tidade, tidadeperc)
+bind2
+```
+
+
+<h1>**Satisfação dos estudantes**</h1>
+A partir deste gráfico analisamos que a mediana é de 7, que 75% dos alunos medem a sua satisfação com um nível inferior a 8 e 25% dos alunos autoavalia-se com um nível inferior a 6.
+
+```{r echo=FALSE, fig.align="center", message=FALSE}
+satisfacao_vida <- cd$Satisfação
+
+nomes = c("Pior vida possível","1","2","3","4","5","6","7","8","9","Melhor vida possível")
+
+boxplot(satisfacao_vida, main = "Satisfação com a vida", col = "yellow", ylim = c(0,10))
+```
+<center> Boxplot - Distribuição dos estudantes pela sua satisfação com a vida </center>
+
+<h1>**Género**</h1>
+Ao visualizar o gráfico, percebe-se que a maioria do alunos que responderam ao inquérito identificam-se com o género feminino ou masculino, com uma ligeira diferença entre estes valores.
+
+```{r echo=FALSE}
+# Género
+tab_genero <- sort(table(cd$Género), decreasing = TRUE)
+
+#gráfico
+barplot(tab_genero, col = "lightblue", main = "Género", ylim=c(0,600))
+```
+<center> Barplot 1 - Distribuição dos alunos por gênero </center>
+
+<h1>**Distrito**</h1>
+Ao visualizar o gráfico seguinte, conclui-se que uma grande parte dos alunos questionados localizam-se em Braga e Porto.
+
+```{r echo=FALSE}
+# Distrito
+tab_distrito = table(cd$Distrito)
+flex_tab <- round(prop.table(tab_distrito)*100,2)
+
+#gráfico
+barplot(sort(tab_distrito,decreasing = TRUE), col = "lightgreen", main = "Distrito", ylim=c(0,350), cex.names = 0.7)
+```
+<center> Barplot 2 - Distribuição dos alunos por distrito </center>
+
+<h1>**Nível escolar do Encarregado de Educação**</h1>
+Este gráfico explicita que a maioria dos encarregados de educação apresentam apenas o ensino básico feito ou ainda inferior a esta qualificação referida.
+
+```{r echo=FALSE}
+# Nível Escolar
+tab_nivel_escolar = table(cd$Nível.escolar.do.EN)
+
+#gráfico
+barplot(sort(tab_nivel_escolar,decreasing = TRUE), col = "lightgreen", main = "Nível escolar do Encarregado de Educação", ylim=c(0,500), cex.names = 0.7)
+```
+<center> Barplot 3 - Distribuição dos alunos por nível escolar do encarregado de educação </center>
+
+<h1>**Dificuldade em tomar iniciativa**</h1>
+Os alunos autoavaliam a sua dificuldade em tomar iniciativa e conclui-se que a maioria tem sim uma dificuldade significativamente grande.
+
+```{r echo=FALSE}
+# Dificuldade em tomar iniciativa: tabela
+tab_tomar_iniciativa <- table(cd$Dificuldade.em.tomar.iniciativa)
+
+aa1 <- as.numeric(tab_tomar_iniciativa)[1]
+aa2 <- as.numeric(tab_tomar_iniciativa)[2]
+aa3 <- as.numeric(tab_tomar_iniciativa)[3]
+aa4 <- as.numeric(tab_tomar_iniciativa)[4]
+Dificuldade.em.tomar.iniciativa <- c("Não se aplica a mim", "Aplica-se algumas vezes", "Aplica-se muitas vezes", "Aplica-se muita parte do meu tempo")
+N <- c(aa1,aa2,aa3,aa4)
+table_dificuldade_iniciativa <- data.frame(Dificuldade.em.tomar.iniciativa, N)
+ftab_dificuldade_iniciativa <- flextable(table_dificuldade_iniciativa)
+ftab_dificuldade_iniciativa <- set_header_labels(ftab_dificuldade_iniciativa, Dificuldade.em.tomar.iniciativa = "Dificuldade em tomar iniciativa", N = "N")
+ftab_dificuldade_iniciativa <- bg(ftab_dificuldade_iniciativa, bg ="lightblue", part="header")
+ftab_dificuldade_iniciativa <- autofit(ftab_dificuldade_iniciativa) 
+ftab_dificuldade_iniciativa
+```
+<center> Tabela 5 - Frequência absoluta </center>
+
+<h1>**Sensações negativas variadas**</h1>
+Nesta tabela observam-se as várias perguntas efetuadas e as respostas dos alunos, sendo possível verificar as dificuldades a níveis mentais e psicológicos que os alunos enfrentam no seu dia-a-dia.
+
+```{r echo=FALSE, fig.align="center", message=FALSE}
+
+# Tabela para as seguintes variáveis: "Dificuldade Iniciativa", Expectativa do futuro", "Depressão", "Pouco entusiasmo", "Valor Pessoal" e "Pensamentos Suicidas".
+a1 <- as.numeric(table(cd$Dificuldade.em.tomar.iniciativa))[1]
+a2 <- as.numeric(table(cd$Dificuldade.em.tomar.iniciativa))[2]
+a3 <- as.numeric(table(cd$Dificuldade.em.tomar.iniciativa))[3]
+a4 <- as.numeric(table(cd$Dificuldade.em.tomar.iniciativa))[4]
+
+b1 <- as.numeric(table(cd$Expectativa.de.futuro))[1]
+b2 <- as.numeric(table(cd$Expectativa.de.futuro))[2]
+b3 <- as.numeric(table(cd$Expectativa.de.futuro))[3]
+b4 <- as.numeric(table(cd$Expectativa.de.futuro))[4]
+
+c1 <- as.numeric(table(cd$Depressão))[1]
+c2 <- as.numeric(table(cd$Depressão))[2]
+c3 <- as.numeric(table(cd$Depressão))[3]
+c4 <- as.numeric(table(cd$Depressão))[4]
+
+d1 <- as.numeric(table(cd$Pouco.entusiasmo))[1]
+d2 <- as.numeric(table(cd$Pouco.entusiasmo))[2]
+d3 <- as.numeric(table(cd$Pouco.entusiasmo))[3]
+d4 <- as.numeric(table(cd$Pouco.entusiasmo))[4]
+
+e1 <- as.numeric(table(cd$Valor.pessoal))[1]
+e2 <- as.numeric(table(cd$Valor.pessoal))[2]
+e3 <- as.numeric(table(cd$Valor.pessoal))[3]
+e4 <- as.numeric(table(cd$Valor.pessoal))[4]
+
+f1 <- as.numeric(table(cd$Pensamentos.suicidas))[1]
+f2 <- as.numeric(table(cd$Pensamentos.suicidas))[2]
+f3 <- as.numeric(table(cd$Pensamentos.suicidas))[3]
+f4 <- as.numeric(table(cd$Pensamentos.suicidas))[4]
+
+# Construir tabela
+Dificuldade.Iniciativa <- c(a1, a2, a3, a4)
+Expectativa.Futuro <- c(b1, b2, b3, b4)
+Depressão <- c(c1, c2, c3, c4)
+Pouco.Entusiasmo <- c(d1, d2, d3, d4)
+Valor.Pessoal <- c(e1, e2, e3, e4)
+Pensamentos.Suicidas <- c(f1, f2, f3, f4)
+
+Legenda <- c("Não se aplicou a mim", "Aplicou-se algumas vezes", "Aplicou-se muitas vezes", "Aplicou-se muita parte do meu tempo")
+tabela <- data.frame(Legenda, Dificuldade.Iniciativa, Expectativa.Futuro, Depressão, Pouco.Entusiasmo, Valor.Pessoal, Pensamentos.Suicidas)
+flex_tab <- flextable(tabela)
+flex_tab <- set_header_labels(flex_tab, Dificuldade.Iniciativa = "Dificuldade em tomar iniciativa", Expectativa.Futuro = "Expectativa de Futuro", Depressão = "Depressão", Pouco.Entusiasmo = "Pouco entusiasmo", Valor.Pessoal = "Valor pessoal", Pensamentos.Suicidas = "Pensamentos suicidas")
+flex_tab <- bg(flex_tab, bg ="orange", part="header")
+flex_tab
+```
+<center> Tabela 6 - Frequência absoluta </center>
+
+<h1>**Conclusão**<h1>
+Em conclusão, verifica-se que muitos estudantes têm problemas de saúde mental, o que pode afetar negativamente o seu desempenho académico e bem-estar geral. É importante que as instituições educacionais e as autoridades governamentais ofereçam recursos e programas de apoio adequados para melhorar a saúde mental dos estudantes.
