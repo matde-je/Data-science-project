@@ -1,2 +1,2 @@
 # Data-science-project
-Excel, jamovi, R and Rmarkdown
+Structure data for visualization and undestanding with excel, jamovi, R and Rmarkdown
